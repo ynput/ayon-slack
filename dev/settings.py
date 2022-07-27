@@ -25,13 +25,13 @@ class Profile(BaseSettingsModel):
                                      title="Upload review maximum "
                                            "file size (MB)")
 
-    desc = ("Message sent to channel selected by profile. "
-           "Message template can contain {} placeholders from anatomyData "
-           "or {review_filepath} for too large review files to link only.")
+    _desc = ("Message sent to channel selected by profile. "
+             "Message template can contain {} placeholders from anatomyData "
+             "or {review_filepath} for too large review files to link only.")
     channel_messages: list[ChannelMessage] = Field(
         default_factory=list,
         title="Messages to channels",
-        description=desc,
+        description=_desc,
         section="Messages",
         widget="textarea"
     )
