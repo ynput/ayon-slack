@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "SlackAddon"
+name = "Slack"
 version = "1.0.0"
 description = "Slack Addon"
 authors = ["OpenPype Team <info@openpype.io>"]

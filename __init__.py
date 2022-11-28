@@ -4,7 +4,7 @@ from .settings import SlackSettings
 from .version import __version__
 
 
-class SlackAddon(BaseServerAddon):
+class Slack(BaseServerAddon):
     name = "slack"
     version = __version__
 
