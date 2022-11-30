@@ -5,7 +5,7 @@ from nxtools import logging
 
 from openpype.addons import BaseServerAddon
 
-from .settings import SlackSettings
+from .settings.main import SlackSettings, DEFAULT_SLACK_SETTING
 from .version import __version__
 
 
@@ -14,6 +14,10 @@ class Slack(BaseServerAddon):
     version = __version__
 
     settings_model = SlackSettings
+
+    async def get_default_settings(self):
+        settings_model_cls = self.get_settings_model()
+        return settings_model_cls(**DEFAULT_SLACK_SETTING)
 
     def get_local_client_info(
             self,

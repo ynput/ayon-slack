@@ -1,5 +1,6 @@
 from pydantic import Field
-from openpype.settings.common import BaseSettingsModel
+
+from openpype.settings import BaseSettingsModel
 
 
 class ChannelMessage(BaseSettingsModel):
@@ -9,16 +10,35 @@ class ChannelMessage(BaseSettingsModel):
     message: str = Field('', title="Message")
 
 
+task_types_enum = [
+    {"label": "Generic", "value": "Generic"},
+    {"label": "Art", "value": "Art"},
+    {"label": "Modeling", "value": "Modeling"},
+    {"label": "Texture", "value": "Texture"},
+    {"label": "Lookdev", "value": "Lookdev"},
+    {"label": "Rigging", "value": "Rigging"},
+    {"label": "Edit", "value": "Edit"},
+    {"label": "Layout", "value": "Layout"},
+    {"label": "Setdress", "value": "Setdress"},
+    {"label": "Animation", "value": "Animation"},
+    {"label": "FX", "value": "FX"},
+    {"label": "Lighting", "value": "Lighting"},
+    {"label": "Paint", "value": "Paint"},
+    {"label": "Compositing", "value": "Compositing"},
+    {"label": "Roto", "value": "Roto"},
+    {"label": "Matchmove", "value": "Matchmove"}
+]
+
+
 class Profile(BaseSettingsModel):
 
     families: list[str] = Field(default_factory=list, title="Families")
     hosts: list[str] = Field(default_factory=list, title="Hosts")
-    task_types: str = Field(title="Task types",
-                            enum=["Generic", "Art", "Modeling",
-                                  "Texture", "Lookdev", "Rigging",
-                                  "Edit", "Layout", "Setdress",
-                                  "Animation", "FX", "Lighting",
-                                  "Paint", "Compositing"])
+    task_types: list[str] = Field(
+        default_factory=list,
+        title="Task types",
+        enum_resolver=lambda: task_types_enum
+    )
     task_names: list[str] = Field(default_factory=list, title="Task names")
     subset_names: list[str] = Field(default_factory=list, title="Subset names")
     review_upload_limit: int = Field(50,
@@ -37,15 +57,19 @@ class Profile(BaseSettingsModel):
     )
 
 
-class SlackSettings(BaseSettingsModel):
-    """Slack system settings."""
-    enabled: bool = Field(default=True)
-    token: str = Field("", title="Auth Token")
+class CollectSlackFamiliesPlugin(BaseSettingsModel):
+    _isGroup = True
+    enabled: bool = True
+    optional: bool = Field(False, title="Optional")
 
     profiles: list[Profile] = Field(
-        default_factory=list,
         title="Profiles",
-        description="Profile and message of Slack notification",
-        section="Profiles",
+        default_factory=Profile
     )
 
+
+class SlackPublishPlugins(BaseSettingsModel):
+    CollectSlackFamilies: CollectSlackFamiliesPlugin = Field(
+        title="Notification to Slack",
+        default_factory=CollectSlackFamiliesPlugin,
+    )
