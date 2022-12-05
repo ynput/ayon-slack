@@ -1,6 +1,6 @@
 import os
-from openpype.modules import OpenPypeModule
-from openpype_interfaces import (
+from openpype.modules import (
+    OpenPypeModule,
     IPluginPaths,
     ILaunchHookPaths
 )
