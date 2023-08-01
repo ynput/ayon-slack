@@ -5,8 +5,8 @@ description = "Slack Addon"
 authors = ["OpenPype Team <info@openpype.io>"]
 license = "MIT License"
 homepage = "https://openpype.io"
-documentation = "https://openpype.io/docs/artist_getting_started"
-repository = "https://github.com/pypeclub/openpype"
+documentation = "https://github.com/ynput/ayon-slack/blob/develop/README.md"
+repository = "https://github.com/ynput/ayon-slack/tree/develop"
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -16,10 +16,3 @@ slack-sdk = "^3.6.0"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[openpype]
-
-exclude = [
-    "**/node_modules",
-    "**/__pycache__"
-]
