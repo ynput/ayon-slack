@@ -14,7 +14,12 @@ class SlackIntegrationModule(OpenPypeModule, IPluginPaths, ILaunchHookPaths):
     name = "slack"
 
     def initialize(self, modules_settings):
-        slack_settings = modules_settings[self.name]
+        try:
+            slack_settings = modules_settings[self.name]
+        except KeyError:
+            # settings cannot be loaded, addon is disabled?
+            self.enabled = False
+            return
         self.enabled = slack_settings["enabled"]
 
     def get_launch_hook_paths(self):
