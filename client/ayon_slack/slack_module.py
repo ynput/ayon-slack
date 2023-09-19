@@ -14,8 +14,7 @@ class SlackIntegrationModule(OpenPypeModule, IPluginPaths, ILaunchHookPaths):
     name = "slack"
 
     def initialize(self, modules_settings):
-        slack_settings = modules_settings[self.name]
-        self.enabled = slack_settings["enabled"]
+        self.enabled = True
 
     def get_launch_hook_paths(self):
         """Implementation of `ILaunchHookPaths`."""
