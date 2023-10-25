@@ -100,7 +100,7 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
 
         username = fill_data.get("user")
         fill_pairs = [
-            ("asset", instance.data.get("asset", fill_data.get("asset"))),
+            ("asset", fill_data.get("asset")),
             ("subset", instance.data.get("subset", fill_data.get("subset"))),
             ("user", username),
             ("username", username),
