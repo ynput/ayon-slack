@@ -5,7 +5,7 @@ from openpype.modules import (
     ILaunchHookPaths
 )
 
-SLACK_MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
+SLACK_ADDON_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class SlackIntegrationModule(OpenPypeModule, IPluginPaths, ILaunchHookPaths):
@@ -18,7 +18,9 @@ class SlackIntegrationModule(OpenPypeModule, IPluginPaths, ILaunchHookPaths):
 
     def get_launch_hook_paths(self):
         """Implementation of `ILaunchHookPaths`."""
-        return os.path.join(SLACK_MODULE_DIR, "launch_hooks")
+        return [
+            os.path.join(SLACK_ADDON_DIR, "launch_hooks")
+        ]
 
     def get_plugin_paths(self):
         """Deadline plugin paths."""
