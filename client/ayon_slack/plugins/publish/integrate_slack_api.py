@@ -3,11 +3,9 @@ import re
 import six
 import pyblish.api
 import copy
-from datetime import datetime
 from abc import ABCMeta, abstractmethod
 import time
 
-from openpype.client import OpenPypeMongoConnection
 from openpype.pipeline.publish import get_publish_repre_path
 from openpype.lib.plugin_tools import prepare_template_data
 
@@ -79,20 +77,6 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
                 msg_id, file_ids = client.send_message(channel,
                                                        message,
                                                        publish_files)
-                if not msg_id:
-                    return
-
-                msg = {
-                    "type": "slack",
-                    "msg_id": msg_id,
-                    "file_ids": file_ids,
-                    "project": project,
-                    "created_dt": datetime.now()
-                }
-                mongo_client = OpenPypeMongoConnection.get_mongo_client()
-                database_name = os.environ["OPENPYPE_DATABASE_NAME"]
-                dbcon = mongo_client[database_name]["notification_messages"]
-                dbcon.insert_one(msg)
 
     def _handle_review_upload(self, message, message_profile, publish_files,
                               review_path):
