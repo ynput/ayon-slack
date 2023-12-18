@@ -1,4 +1,4 @@
-from .slack_module import (
+from .slack_addon import (
     SlackIntegrationModule,
     SLACK_MODULE_DIR
 )
