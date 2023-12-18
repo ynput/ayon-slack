@@ -20,8 +20,13 @@ class SlackIntegrationAddon(AYONAddon, IPluginPaths, ILaunchHookPaths):
         ]
 
     def get_plugin_paths(self):
-        """Deadline plugin paths."""
-        current_dir = os.path.dirname(os.path.abspath(__file__))
+        """Implementation of abstract method for `IPluginPaths`."""
+
         return {
-            "publish": [os.path.join(current_dir, "plugins", "publish")]
+            "publish": self.get_publish_plugin_paths(),
         }
+
+    def get_publish_plugin_paths(self, host_name=None):
+        return [
+            os.path.join(SLACK_ADDON_DIR, "plugins", "publish")
+        ]
