@@ -300,8 +300,9 @@ class AbstractSlackOperations:
         if "not_in_channel" in error_str:
             # there is no file.write.public scope, app must be explicitly in
             # the channel
-            msg = " - application must added to channel '{}'.".format(channel)
-            error_str += msg + " Ask Slack admin."
+            error_str += (
+                " - application must added to channel '{}'. Ask Slack admin."
+            ).format(channel)
         return error_str
 
 
