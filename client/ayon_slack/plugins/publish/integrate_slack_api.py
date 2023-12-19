@@ -136,7 +136,7 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
 
         multiple_case_variants = prepare_template_data(fill_pairs)
         fill_data.update(multiple_case_variants)
-        message = ''
+        message = ""
         try:
             message = self._escape_missing_keys(message_templ, fill_data).\
                 format(**fill_data)
