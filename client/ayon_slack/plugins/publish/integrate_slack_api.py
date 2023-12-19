@@ -34,7 +34,7 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
         review_path = self._get_review_path(instance)
 
         publish_files = set()
-        message = ''
+        message = ""
         additional_message = instance.data.get("slack_additional_message")
         token = instance.data["slack_token"]
         if additional_message:
