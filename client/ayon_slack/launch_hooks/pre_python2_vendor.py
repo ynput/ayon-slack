@@ -1,6 +1,8 @@
 import os
+
 from openpype.lib import PreLaunchHook
-from openpype_modules.slack import SLACK_MODULE_DIR
+
+from ayon_slack import SLACK_ADDON_DIR
 
 
 class PrePython2Support(PreLaunchHook):
@@ -16,7 +18,7 @@ class PrePython2Support(PreLaunchHook):
         self.log.info("Adding Slack Python 2 packages to PYTHONPATH.")
 
         # Prepare vendor dir path
-        python_2_vendor = os.path.join(SLACK_MODULE_DIR, "python2_vendor")
+        python_2_vendor = os.path.join(SLACK_ADDON_DIR, "python2_vendor")
 
         # Add Python 2 modules
         python_paths = [
