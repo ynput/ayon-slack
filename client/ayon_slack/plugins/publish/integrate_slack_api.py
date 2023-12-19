@@ -216,7 +216,7 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
             return message
 
         for orig_user in matches:
-            user_name = orig_user.replace("@", '')
+            user_name = orig_user.replace("@", "")
             slack_id = self._get_user_id(users, user_name)
             mention = None
             if slack_id:
