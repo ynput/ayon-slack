@@ -8,6 +8,7 @@ from .version import __version__
 
 class Slack(BaseServerAddon):
     name = "slack"
+    title = "Slack"
     version = __version__
 
     settings_model = SlackSettings
