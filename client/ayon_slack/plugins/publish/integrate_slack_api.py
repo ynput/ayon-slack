@@ -180,19 +180,18 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
 
     def _get_user_id(self, users, user_name):
         """Returns internal slack id for user name"""
-        user_id = None
         user_name_lower = user_name.lower()
         for user in users:
-            if (not user.get("deleted") and
-                    (user_name_lower == user["name"].lower() or
-                     # bots dont have display_name
-                     user_name_lower == user["profile"].get("display_name",
-                                                            '').lower() or
-                     user_name_lower == user["profile"].get("real_name",
-                                                            '').lower())):
-                user_id = user["id"]
-                break
-        return user_id
+            if user.get("deleted"):
+                continue
+            user_profile = user["profile"]
+            if user_name_lower in (
+                user["name"].lower(),
+                user_profile.get("display_name", "").lower(),
+                user_profile.get("real_name", "").lower(),
+            ):
+                return user["id"]
+        return None
 
     def _get_group_id(self, groups, group_name):
         """Returns internal group id for string name"""
