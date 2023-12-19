@@ -297,7 +297,7 @@ class AbstractSlackOperations:
 
     def _enrich_error(self, error_str, channel):
         """Enhance known errors with more helpful notations."""
-        if 'not_in_channel' in error_str:
+        if "not_in_channel" in error_str:
             # there is no file.write.public scope, app must be explicitly in
             # the channel
             msg = " - application must added to channel '{}'.".format(channel)
