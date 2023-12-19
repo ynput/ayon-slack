@@ -195,14 +195,16 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
 
     def _get_group_id(self, groups, group_name):
         """Returns internal group id for string name"""
-        group_id = None
         for group in groups:
-            if (not group.get("date_delete") and
-                    (group_name.lower() == group["name"].lower() or
-                     group_name.lower() == group["handle"])):
-                group_id = group["id"]
-                break
-        return group_id
+            if (
+                not group.get("date_delete")
+                and group_name.lower() in (
+                    group["name"].lower(),
+                    group["handle"]
+                )
+            ):
+                return group["id"]
+        return None
 
     def _translate_users(self, message, users, groups):
         """Replace all occurences of @mentions with proper <@name> format."""
