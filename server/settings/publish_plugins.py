@@ -11,7 +11,7 @@ class ChannelMessage(BaseSettingsModel):
 
 
 class Profile(BaseSettingsModel):
-    families: list[str] = Field(default_factory=list, title="Families")
+    product_types: list[str] = Field(default_factory=list, title="Product types")
     hosts: list[str] = Field(default_factory=list, title="Hosts")
     task_types: list[str] = Field(
         default_factory=list,
@@ -19,7 +19,7 @@ class Profile(BaseSettingsModel):
         enum_resolver=task_types_enum
     )
     task_names: list[str] = Field(default_factory=list, title="Task names")
-    subset_names: list[str] = Field(default_factory=list, title="Subset names")
+    product_names: list[str] = Field(default_factory=list, title="Product names")
     review_upload_limit: float = Field(
         50.0,
         title="Upload review maximum file size (MB)")
