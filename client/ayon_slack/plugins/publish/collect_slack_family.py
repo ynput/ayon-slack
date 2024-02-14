@@ -18,7 +18,7 @@ class CollectSlackFamilies(pyblish.api.InstancePlugin,
     label = 'Collect Slack family'
     settings_category = "slack"
 
-    profiles = None
+    profiles = []
 
     @classmethod
     def get_attribute_defs(cls):
@@ -36,12 +36,26 @@ class CollectSlackFamilies(pyblish.api.InstancePlugin,
         task_data = instance.data["anatomyData"].get("task", {})
         family = self.main_family_from_instance(instance)
         key_values = {
-            "families": family,
-            "tasks": task_data.get("name"),
+            "product_types": family,
+            "task_names": task_data.get("name"),
             "task_types": task_data.get("type"),
             "hosts": instance.context.data["hostName"],
-            "subsets": instance.data["subset"]
+            "product_names": instance.data["subset"],
+
+            # Backwards compatibility
+            "families": family,
+            "tasks": task_data.get("name"),
+            "subsets": instance.data["subset"],
+            "subset_names": instance.data["subset"],
         }
+        # Filter 'key_values' for backwards compatibility
+        if self.profiles:
+            profile_keys = set(self.profiles[0].keys())
+            key_values = {
+                key: value
+                for key, value in key_values.items()
+                if key in profile_keys
+            }
         profile = filter_profiles(self.profiles, key_values,
                                   logger=self.log)
 
