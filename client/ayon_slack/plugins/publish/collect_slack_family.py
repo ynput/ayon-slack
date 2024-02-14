@@ -53,7 +53,7 @@ class CollectSlackFamilies(pyblish.api.InstancePlugin,
             profile_keys = set(self.profiles[0].keys())
             key_values = {
                 key: value
-                for key, value in key_values.keys()
+                for key, value in key_values.items()
                 if key in profile_keys
             }
         profile = filter_profiles(self.profiles, key_values,
