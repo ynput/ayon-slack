@@ -3,13 +3,9 @@ from __future__ import annotations
 from ayon_server.addons import BaseServerAddon
 
 from .settings.main import SlackSettings, DEFAULT_SLACK_SETTING
-from .version import __version__
 
 
 class Slack(BaseServerAddon):
-    name = "slack"
-    title = "Slack"
-    version = __version__
 
     settings_model = SlackSettings
 
