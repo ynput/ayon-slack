@@ -63,10 +63,6 @@ class CollectSlackFamilies(pyblish.api.InstancePlugin,
             self.log.info("No profile found, notification won't be send")
             return
 
-        # make slack publishable
-        if not profile:
-            return
-
         self.log.info("Found profile: {}".format(profile))
         if instance.data.get('families'):
             instance.data['families'].append('slack')
