@@ -102,37 +102,34 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
 
         username = fill_data.get("user")
         fill_pairs = [
-            ("asset", fill_data.get("asset")),
-            ("subset", instance.data.get("subset", fill_data.get("subset"))),
+            ("folder", fill_data.get("folder")),
+            ("product", fill_data.get("product")),
             ("user", username),
             ("username", username),
-            ("app", instance.data.get("app", fill_data.get("app"))),
-            ("family", instance.data.get("family", fill_data.get("family"))),
-            ("version", str(instance.data.get("version",
-                                              fill_data.get("version"))))
+            ("app", instance.context.data["hostName"]),
+            (
+                "version",
+                str(instance.data.get("version", fill_data.get("version")))
+            ),
         ]
         if review_path:
             fill_pairs.append(("review_filepath", review_path))
 
-        task_data = (
-                copy.deepcopy(instance.data.get("anatomyData", {})).get("task")
-                or fill_data.get("task")
+        message_templ = (
+            message_templ
+            .replace("{task}", "{task[name]}")
+            .replace("{Task}", "{Task[name]}")
+            .replace("{TASK}", "{TASK[NAME]}")
+            .replace("{asset}", "{folder[name]}")
+            .replace("{Asset}", "{Folder[name]}")
+            .replace("{ASSET}", "{FOLDER[NAME]}")
+            .replace("{subset}", "{product[name]}")
+            .replace("{Subset}", "{Product[name]}")
+            .replace("{SUBSET}", "{PRODUCT[NAME]}")
+            .replace("{family}", "{product[type]}")
+            .replace("{Family}", "{Product[type]}")
+            .replace("{FAMILY}", "{PRODUCT[TYPE]}")
         )
-        if not isinstance(task_data, dict):
-            # fallback for legacy - if task_data is only task name
-            task_data["name"] = task_data
-        if task_data:
-            if (
-                "{task}" in message_templ
-                or "{Task}" in message_templ
-                or "{TASK}" in message_templ
-            ):
-                fill_pairs.append(("task", task_data["name"]))
-
-            else:
-                for key, value in task_data.items():
-                    fill_key = "task[{}]".format(key)
-                    fill_pairs.append((fill_key, value))
 
         multiple_case_variants = prepare_template_data(fill_pairs)
         fill_data.update(multiple_case_variants)
