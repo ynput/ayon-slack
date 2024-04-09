@@ -55,7 +55,6 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
                 message, publish_files = self._handle_review_upload(
                     message, message_profile, publish_files, review_path)
 
-            project = instance.context.data["anatomyData"]["project"]["code"]
             for channel in message_profile["channels"]:
                 if six.PY2:
                     client = SlackPython2Operations(token, self.log)
