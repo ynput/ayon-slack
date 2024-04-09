@@ -1,13 +1,14 @@
 import os
 import re
-import six
-import pyblish.api
 import copy
 from abc import ABCMeta, abstractmethod
 import time
 
-from openpype.pipeline.publish import get_publish_repre_path
-from openpype.lib.plugin_tools import prepare_template_data
+import six
+import pyblish.api
+
+from ayon_core.lib.plugin_tools import prepare_template_data
+from ayon_core.pipeline.publish import get_publish_repre_path
 
 
 class IntegrateSlackAPI(pyblish.api.InstancePlugin):

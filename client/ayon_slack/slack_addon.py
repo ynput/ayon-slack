@@ -1,5 +1,5 @@
 import os
-from openpype.modules import (
+from ayon_core.addon import (
     AYONAddon,
     IPluginPaths,
 )
