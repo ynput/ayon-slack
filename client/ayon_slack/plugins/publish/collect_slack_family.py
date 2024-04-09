@@ -34,16 +34,16 @@ class CollectSlackFamilies(pyblish.api.InstancePlugin,
 
     def process(self, instance):
         task_data = instance.data["anatomyData"].get("task", {})
-        family = self.main_family_from_instance(instance)
+        product_type = instance.data["productType"]
         key_values = {
-            "product_types": family,
+            "product_types": product_type,
             "task_names": task_data.get("name"),
             "task_types": task_data.get("type"),
             "hosts": instance.context.data["hostName"],
             "product_names": instance.data["subset"],
 
             # Backwards compatibility
-            "families": family,
+            "families": product_type,
             "tasks": task_data.get("name"),
             "subsets": instance.data["subset"],
             "subset_names": instance.data["subset"],
@@ -64,10 +64,7 @@ class CollectSlackFamilies(pyblish.api.InstancePlugin,
             return
 
         self.log.info("Found profile: {}".format(profile))
-        if instance.data.get('families'):
-            instance.data['families'].append('slack')
-        else:
-            instance.data['families'] = ['slack']
+        instance.data.setdefault("families", []).append("slack")
 
         selected_profiles = profile["channel_messages"]
         for prof in selected_profiles:
@@ -84,10 +81,3 @@ class CollectSlackFamilies(pyblish.api.InstancePlugin,
         additional_message = attribute_values.get("additional_message")
         if additional_message:
             instance.data["slack_additional_message"] = additional_message
-
-    def main_family_from_instance(self, instance):  # TODO yank from integrate
-        """Returns main family of entered instance."""
-        family = instance.data.get("family")
-        if not family:
-            family = instance.data["families"][0]
-        return family
