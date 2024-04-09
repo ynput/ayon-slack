@@ -40,7 +40,7 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
         token = instance.data["slack_token"]
         if additional_message:
             message = "{} \n".format(additional_message)
-        users = groups = None
+
         for message_profile in instance.data["slack_channel_message_profiles"]:
             message += self._get_filled_message(message_profile["message"],
                                                 instance,
