@@ -15,7 +15,7 @@ class CollectSlackFamilies(pyblish.api.InstancePlugin,
         Add Slack family to those instance that should be messaged to Slack
     """
     order = pyblish.api.CollectorOrder + 0.4999
-    label = 'Collect Slack family'
+    label = "Collect Slack family"
     settings_category = "slack"
 
     profiles = []

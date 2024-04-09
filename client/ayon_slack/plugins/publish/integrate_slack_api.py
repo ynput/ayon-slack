@@ -135,8 +135,9 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
         fill_data.update(multiple_case_variants)
         message = ""
         try:
-            message = self._escape_missing_keys(message_templ, fill_data).\
-                format(**fill_data)
+            message = self._escape_missing_keys(
+                message_templ, fill_data
+            ).format(**fill_data)
         except Exception:
             # shouldn't happen
             self.log.warning(
@@ -149,7 +150,7 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
         """Returns abs url for thumbnail if present in instance repres"""
         thumbnail_path = None
         for repre in instance.data.get("representations", []):
-            if repre.get('thumbnail') or "thumbnail" in repre.get('tags', []):
+            if repre.get("thumbnail") or "thumbnail" in repre.get("tags", []):
                 repre_thumbnail_path = get_publish_repre_path(
                     instance, repre, False
                 )
@@ -162,10 +163,12 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
         """Returns abs url for review if present in instance repres"""
         review_path = None
         for repre in instance.data.get("representations", []):
-            tags = repre.get('tags', [])
-            if (repre.get("review")
-                    or "review" in tags
-                    or "burnin" in tags):
+            tags = repre.get("tags", [])
+            if (
+                repre.get("review")
+                or "review" in tags
+                or "burnin" in tags
+            ):
                 repre_review_path = get_publish_repre_path(
                     instance, repre, False
                 )
