@@ -99,6 +99,9 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
         """
 
         fill_data = copy.deepcopy(instance.data["anatomyData"])
+        # Make sure version is string
+        # TODO remove when fixed in ayon-core 'prepare_template_data' function
+        fill_data["version"] = str(fill_data["version"])
         if review_path:
             fill_data["review_filepath"] = review_path
 
