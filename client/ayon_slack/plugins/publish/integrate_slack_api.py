@@ -98,7 +98,7 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
         uploading only.
         """
 
-        fill_data = copy.deepcopy(instance.context.data["anatomyData"])
+        fill_data = copy.deepcopy(instance.data["anatomyData"])
         if review_path:
             fill_data["review_filepath"] = review_path
 
