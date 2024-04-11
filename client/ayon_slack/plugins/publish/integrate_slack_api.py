@@ -101,19 +101,30 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
         fill_data = copy.deepcopy(instance.context.data["anatomyData"])
 
         username = fill_data.get("user")
-        fill_pairs = [
-            ("folder", fill_data.get("folder")),
-            ("product", fill_data.get("product")),
-            ("user", username),
-            ("username", username),
-            ("app", instance.context.data["hostName"]),
-            (
-                "version",
-                str(instance.data.get("version", fill_data.get("version")))
-            ),
-        ]
+        product_name = instance.data["productName"]
+        product_type = instance.data["productType"]
+        folder = instance.data["folderEntity"]
+        fill_pairs = {
+            "hierarchy" : instance.data["folderPath"],
+            "folder" : {
+                "name": folder["name"],
+                "path": folder["path"],
+                "type": folder["folderType"]
+            },
+            "project" : fill_data["project"],
+            "product" : {
+                "name": product_name,
+                "type": product_type,
+            },
+            "user" : username,
+            "username" : username,
+            "app" : instance.context.data["hostName"],
+            "version" :
+                str(instance.data.get("version", fill_data.get("version"))),
+        }
+
         if review_path:
-            fill_pairs.append(("review_filepath", review_path))
+            fill_pairs["review_filepath"] = review_path
 
         message_templ = (
             message_templ
