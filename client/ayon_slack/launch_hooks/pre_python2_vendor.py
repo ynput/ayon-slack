@@ -1,6 +1,6 @@
 import os
 
-from openpype.lib import PreLaunchHook
+from ayon_applications import PreLaunchHook
 
 from ayon_slack import SLACK_ADDON_DIR
 

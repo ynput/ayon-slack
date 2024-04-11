@@ -1,12 +1,12 @@
 import pyblish.api
 
-from openpype.lib.profiles_filtering import filter_profiles
-from openpype.lib import attribute_definitions
-from openpype.pipeline import OpenPypePyblishPluginMixin
+from ayon_core.lib.profiles_filtering import filter_profiles
+from ayon_core.lib import attribute_definitions
+from ayon_core.pipeline import AYONPyblishPluginMixin
 
 
 class CollectSlackFamilies(pyblish.api.InstancePlugin,
-                           OpenPypePyblishPluginMixin):
+                           AYONPyblishPluginMixin):
     """Collect family for Slack notification
 
         Expects configured profile in
@@ -15,7 +15,7 @@ class CollectSlackFamilies(pyblish.api.InstancePlugin,
         Add Slack family to those instance that should be messaged to Slack
     """
     order = pyblish.api.CollectorOrder + 0.4999
-    label = 'Collect Slack family'
+    label = "Collect Slack family"
     settings_category = "slack"
 
     profiles = []
@@ -34,19 +34,19 @@ class CollectSlackFamilies(pyblish.api.InstancePlugin,
 
     def process(self, instance):
         task_data = instance.data["anatomyData"].get("task", {})
-        family = self.main_family_from_instance(instance)
+        product_type = instance.data["productType"]
         key_values = {
-            "product_types": family,
+            "product_types": product_type,
             "task_names": task_data.get("name"),
             "task_types": task_data.get("type"),
             "hosts": instance.context.data["hostName"],
-            "product_names": instance.data["subset"],
+            "product_names": instance.data["productName"],
 
             # Backwards compatibility
-            "families": family,
+            "families": product_type,
             "tasks": task_data.get("name"),
-            "subsets": instance.data["subset"],
-            "subset_names": instance.data["subset"],
+            "subsets": instance.data["productName"],
+            "subset_names": instance.data["productName"],
         }
         # Filter 'key_values' for backwards compatibility
         if self.profiles:
@@ -63,15 +63,8 @@ class CollectSlackFamilies(pyblish.api.InstancePlugin,
             self.log.info("No profile found, notification won't be send")
             return
 
-        # make slack publishable
-        if not profile:
-            return
-
         self.log.info("Found profile: {}".format(profile))
-        if instance.data.get('families'):
-            instance.data['families'].append('slack')
-        else:
-            instance.data['families'] = ['slack']
+        instance.data.setdefault("families", []).append("slack")
 
         selected_profiles = profile["channel_messages"]
         for prof in selected_profiles:
@@ -88,10 +81,3 @@ class CollectSlackFamilies(pyblish.api.InstancePlugin,
         additional_message = attribute_values.get("additional_message")
         if additional_message:
             instance.data["slack_additional_message"] = additional_message
-
-    def main_family_from_instance(self, instance):  # TODO yank from integrate
-        """Returns main family of entered instance."""
-        family = instance.data.get("family")
-        if not family:
-            family = instance.data["families"][0]
-        return family

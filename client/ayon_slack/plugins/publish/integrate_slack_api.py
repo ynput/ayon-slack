@@ -1,13 +1,14 @@
 import os
 import re
-import six
-import pyblish.api
 import copy
 from abc import ABCMeta, abstractmethod
 import time
 
-from openpype.pipeline.publish import get_publish_repre_path
-from openpype.lib.plugin_tools import prepare_template_data
+import six
+import pyblish.api
+
+from ayon_core.lib.plugin_tools import prepare_template_data
+from ayon_core.pipeline.publish import get_publish_repre_path
 
 
 class IntegrateSlackAPI(pyblish.api.InstancePlugin):
@@ -39,7 +40,7 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
         token = instance.data["slack_token"]
         if additional_message:
             message = "{} \n".format(additional_message)
-        users = groups = None
+
         for message_profile in instance.data["slack_channel_message_profiles"]:
             message += self._get_filled_message(message_profile["message"],
                                                 instance,
@@ -54,7 +55,6 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
                 message, publish_files = self._handle_review_upload(
                     message, message_profile, publish_files, review_path)
 
-            project = instance.context.data["anatomyData"]["project"]["code"]
             for channel in message_profile["channels"]:
                 if six.PY2:
                     client = SlackPython2Operations(token, self.log)
@@ -98,48 +98,36 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
         uploading only.
         """
 
-        fill_data = copy.deepcopy(instance.context.data["anatomyData"])
-
-        username = fill_data.get("user")
-        fill_pairs = [
-            ("asset", fill_data.get("asset")),
-            ("subset", instance.data.get("subset", fill_data.get("subset"))),
-            ("user", username),
-            ("username", username),
-            ("app", instance.data.get("app", fill_data.get("app"))),
-            ("family", instance.data.get("family", fill_data.get("family"))),
-            ("version", str(instance.data.get("version",
-                                              fill_data.get("version"))))
-        ]
+        fill_data = copy.deepcopy(instance.data["anatomyData"])
+        # Make sure version is string
+        # TODO remove when fixed in ayon-core 'prepare_template_data' function
+        fill_data["version"] = str(fill_data["version"])
         if review_path:
-            fill_pairs.append(("review_filepath", review_path))
+            fill_data["review_filepath"] = review_path
 
-        task_data = (
-                copy.deepcopy(instance.data.get("anatomyData", {})).get("task")
-                or fill_data.get("task")
+        message_templ = (
+            message_templ
+            .replace("{task}", "{task[name]}")
+            .replace("{Task}", "{Task[name]}")
+            .replace("{TASK}", "{TASK[NAME]}")
+            .replace("{asset}", "{folder[name]}")
+            .replace("{Asset}", "{Folder[name]}")
+            .replace("{ASSET}", "{FOLDER[NAME]}")
+            .replace("{subset}", "{product[name]}")
+            .replace("{Subset}", "{Product[name]}")
+            .replace("{SUBSET}", "{PRODUCT[NAME]}")
+            .replace("{family}", "{product[type]}")
+            .replace("{Family}", "{Product[type]}")
+            .replace("{FAMILY}", "{PRODUCT[TYPE]}")
         )
-        if not isinstance(task_data, dict):
-            # fallback for legacy - if task_data is only task name
-            task_data["name"] = task_data
-        if task_data:
-            if (
-                "{task}" in message_templ
-                or "{Task}" in message_templ
-                or "{TASK}" in message_templ
-            ):
-                fill_pairs.append(("task", task_data["name"]))
 
-            else:
-                for key, value in task_data.items():
-                    fill_key = "task[{}]".format(key)
-                    fill_pairs.append((fill_key, value))
-
-        multiple_case_variants = prepare_template_data(fill_pairs)
+        multiple_case_variants = prepare_template_data(fill_data)
         fill_data.update(multiple_case_variants)
         message = ""
         try:
-            message = self._escape_missing_keys(message_templ, fill_data).\
-                format(**fill_data)
+            message = self._escape_missing_keys(
+                message_templ, fill_data
+            ).format(**fill_data)
         except Exception:
             # shouldn't happen
             self.log.warning(
@@ -152,7 +140,7 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
         """Returns abs url for thumbnail if present in instance repres"""
         thumbnail_path = None
         for repre in instance.data.get("representations", []):
-            if repre.get('thumbnail') or "thumbnail" in repre.get('tags', []):
+            if repre.get("thumbnail") or "thumbnail" in repre.get("tags", []):
                 repre_thumbnail_path = get_publish_repre_path(
                     instance, repre, False
                 )
@@ -165,10 +153,12 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
         """Returns abs url for review if present in instance repres"""
         review_path = None
         for repre in instance.data.get("representations", []):
-            tags = repre.get('tags', [])
-            if (repre.get("review")
-                    or "review" in tags
-                    or "burnin" in tags):
+            tags = repre.get("tags", [])
+            if (
+                repre.get("review")
+                or "review" in tags
+                or "burnin" in tags
+            ):
                 repre_review_path = get_publish_repre_path(
                     instance, repre, False
                 )
