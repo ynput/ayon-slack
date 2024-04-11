@@ -40,13 +40,13 @@ class CollectSlackFamilies(pyblish.api.InstancePlugin,
             "task_names": task_data.get("name"),
             "task_types": task_data.get("type"),
             "hosts": instance.context.data["hostName"],
-            "product_names": instance.data["subset"],
+            "product_names": instance.data["productName"],
 
             # Backwards compatibility
             "families": product_type,
             "tasks": task_data.get("name"),
-            "subsets": instance.data["subset"],
-            "subset_names": instance.data["subset"],
+            "subsets": instance.data["productName"],
+            "subset_names": instance.data["productName"],
         }
         # Filter 'key_values' for backwards compatibility
         if self.profiles:
