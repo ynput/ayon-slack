@@ -2,5 +2,5 @@
 """Package declaring addon version."""
 name = "slack"
 title = "Slack"
-version = "1.0.2-dev.1"
+version = "1.1.0"
 client_dir = "ayon_slack"
