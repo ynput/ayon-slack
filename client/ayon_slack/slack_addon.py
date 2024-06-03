@@ -4,6 +4,8 @@ from ayon_core.addon import (
     IPluginPaths,
 )
 
+from .version import __version__
+
 SLACK_ADDON_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -11,6 +13,7 @@ class SlackIntegrationAddon(AYONAddon, IPluginPaths):
     """Allows sending notification to Slack channels during publishing."""
 
     name = "slack"
+    version = __version__
 
     def get_launch_hook_paths(self):
         """Implementation of `ILaunchHookPaths`."""
