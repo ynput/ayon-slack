@@ -7,7 +7,10 @@ class ChannelMessage(BaseSettingsModel):
     channels: list[str] = Field(default_factory=list, title="Channels")
     upload_thumbnail: bool = Field(default=True, title="Upload thumbnail")
     upload_review: bool = Field(default=True, title="Upload review")
-    message: str = Field('', title="Message")
+    message: str = Field('',
+        title="Message", 
+        widget="textarea"
+    )
 
 
 class Profile(BaseSettingsModel):
@@ -31,8 +34,7 @@ class Profile(BaseSettingsModel):
         default_factory=list,
         title="Messages to channels",
         description=_desc,
-        section="Messages",
-        widget="textarea"
+        section="Messages"
     )
 
 
