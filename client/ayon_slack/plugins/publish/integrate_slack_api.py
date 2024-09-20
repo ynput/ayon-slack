@@ -362,7 +362,7 @@ class SlackPython3Operations(AbstractSlackOperations):
             with open(published_file, "rb") as f:
                 uploaded_file = self.client.files_upload_v2(
                     filename=os.path.basename(published_file),
-                    file=f.read()
+                    file=f
                 )
                 file_urls.append(uploaded_file.get("file").get("permalink"))
 
