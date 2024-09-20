@@ -74,9 +74,7 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
                         groups = slack_ids["groups"]
                     message = self._translate_users(message, users, groups)
 
-                msg_id, file_ids = client.send_message(channel,
-                                                       message,
-                                                       publish_files)
+                client.send_message(channel, message, publish_files)
 
     def _handle_review_upload(self, message, message_profile, publish_files,
                               review_path):
@@ -337,25 +335,14 @@ class SlackPython3Operations(AbstractSlackOperations):
     def send_message(self, channel, message, publish_files):
         from slack_sdk.errors import SlackApiError
         try:
-            attachment_str = "\n\n Attachment links: \n"
-            file_ids = []
-            for published_file in publish_files:
-                response = self.client.files_upload(
-                    file=published_file,
-                    filename=os.path.basename(published_file))
-                attachment_str += "\n<{}|{}>".format(
-                    response["file"]["permalink"],
-                    os.path.basename(published_file))
-                file_ids.append(response["file"]["id"])
+            attachments = self._upload_attachments(publish_files)
 
-            if publish_files:
-                message += attachment_str
+            message = self._add_attachments(attachments, message)
 
-            response = self.client.chat_postMessage(
+            self.client.chat_postMessage(
                 channel=channel,
                 text=message
             )
-            return response.data["ts"], file_ids
         except SlackApiError as e:
             # # You will get a SlackApiError if "ok" is False
             if e.response.get("error"):
@@ -368,7 +355,25 @@ class SlackPython3Operations(AbstractSlackOperations):
             error_str = self._enrich_error(str(e), channel)
             self.log.warning("Not SlackAPI error", exc_info=True)
 
-        return None, []
+    def _upload_attachments(self, publish_files):
+        """Returns list of permalinks to uploaded files"""
+        file_urls = []
+        for published_file in publish_files:
+            with open(published_file, "rb") as f:
+                uploaded_file = self.client.files_upload_v2(
+                    filename=os.path.basename(published_file),
+                    file=f
+                )
+                file_urls.append(uploaded_file.get("file").get("permalink"))
+
+        return file_urls
+
+    def _add_attachments(self, attachments, message):
+        """Add permalink urls to message without displaying url."""
+        for permalink_url in attachments:
+            # format extremely important!
+            message += f"<{permalink_url}| >"
+        return message
 
 
 class SlackPython2Operations(AbstractSlackOperations):
@@ -443,4 +448,3 @@ class SlackPython2Operations(AbstractSlackOperations):
             self.log.warning("Error happened: {}".format(error_str),
                              exc_info=True)
 
-        return None, []
