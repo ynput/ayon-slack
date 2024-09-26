@@ -8,7 +8,7 @@ class ChannelMessage(BaseSettingsModel):
     upload_thumbnail: bool = Field(default=True, title="Upload thumbnail")
     upload_review: bool = Field(default=True, title="Upload review")
     message: str = Field('',
-        title="Message", 
+        title="Message",
         widget="textarea"
     )
 

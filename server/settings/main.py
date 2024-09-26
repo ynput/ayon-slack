@@ -11,7 +11,7 @@ class SlackSettings(BaseSettingsModel):
 
     publish: SlackPublishPlugins = Field(
         title="Publish plugins",
-        description="Fill combination of families, task names and hosts " 
+        description="Fill combination of families, task names and hosts "
                     "when to send notification",
     )
 
