@@ -31,6 +31,11 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
     optional = True
 
     def process(self, instance):
+        if instance.data.get("farm"):
+            self.log.debug(
+                "Instance is marked to be processed on farm. Skipping")
+            return
+
         thumbnail_path = self._get_thumbnail_path(instance)
         review_path = self._get_review_path(instance)
 
