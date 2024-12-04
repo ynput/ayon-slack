@@ -98,8 +98,8 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
             publish_files.add(review_path)
         return message, publish_files
 
-    def _get_filled_content(self, message_templ, instance, review_path=None):
-        """Use message_templ and data from instance to get message content.
+    def _get_filled_content(self, message, instance, review_path=None):
+        """Use message and data from instance to get dynamic message content.
 
         Reviews might be large, so allow only adding link to message instead of
         uploading only.
@@ -112,8 +112,8 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
         if review_path:
             fill_data["review_filepath"] = review_path
 
-        message_templ = (
-            message_templ
+        message = (
+            message
             .replace("{task}", "{task[name]}")
             .replace("{Task}", "{Task[name]}")
             .replace("{TASK}", "{TASK[NAME]}")
@@ -130,15 +130,14 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
 
         multiple_case_variants = prepare_template_data(fill_data)
         fill_data.update(multiple_case_variants)
-        message = ""
         try:
             message = self._escape_missing_keys(
-                message_templ, fill_data
+                message, fill_data
             ).format(**fill_data)
         except Exception:
             # shouldn't happen
             self.log.warning(
-                "Some keys are missing in {}".format(message_templ),
+                "Some keys are missing in {}".format(message),
                 exc_info=True)
 
         return message
