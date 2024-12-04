@@ -40,16 +40,17 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
         review_path = self._get_review_path(instance)
 
         publish_files = set()
-        message = ""
-        additional_message = instance.data.get("slack_additional_message")
         token = instance.data["slack_token"]
-        if additional_message:
-            message = "{} \n".format(additional_message)
 
+        additional_message = instance.data.get("slack_additional_message")
         for message_profile in instance.data["slack_channel_message_profiles"]:
-            message += self._get_filled_message(message_profile["message"],
-                                                instance,
-                                                review_path)
+            message = message_profile["message"]
+            if additional_message:
+                message = f"{additional_message} \n {message}"
+
+            message = self._get_filled_content(
+                message, instance, review_path)
+
             if not message:
                 return
 
@@ -61,6 +62,9 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
                     message, message_profile, publish_files, review_path)
 
             for channel in message_profile["channels"]:
+                channel = self._get_filled_content(
+                    channel, instance, review_path)
+
                 if six.PY2:
                     client = SlackPython2Operations(token, self.log)
                 else:
@@ -94,7 +98,7 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
             publish_files.add(review_path)
         return message, publish_files
 
-    def _get_filled_message(self, message_templ, instance, review_path=None):
+    def _get_filled_content(self, message_templ, instance, review_path=None):
         """Use message_templ and data from instance to get message content.
 
         Reviews might be large, so allow only adding link to message instead of
@@ -452,4 +456,3 @@ class SlackPython2Operations(AbstractSlackOperations):
             error_str = self._enrich_error(str(e), channel)
             self.log.warning("Error happened: {}".format(error_str),
                              exc_info=True)
-
