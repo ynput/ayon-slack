@@ -15,12 +15,6 @@ class SlackIntegrationAddon(AYONAddon, IPluginPaths):
     name = "slack"
     version = __version__
 
-    def get_launch_hook_paths(self):
-        """Implementation of `ILaunchHookPaths`."""
-        return [
-            os.path.join(SLACK_ADDON_DIR, "launch_hooks")
-        ]
-
     def get_plugin_paths(self):
         """Implementation of abstract method for `IPluginPaths`."""
 
