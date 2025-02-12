@@ -1,15 +1,14 @@
-from pydantic import Field
-from ayon_server.settings.common import BaseSettingsModel
+from ayon_server.settings.common import SettingsField, BaseSettingsModel
 
 from .publish_plugins import SlackPublishPlugins
 
 
 class SlackSettings(BaseSettingsModel):
     """Slack project settings."""
-    enabled: bool = Field(default=True)
-    token: str = Field("", title="Auth Token")
+    enabled: bool = SettingsField(default=True)
+    token: str = SettingsField("", title="Auth Token")
 
-    publish: SlackPublishPlugins = Field(
+    publish: SlackPublishPlugins = SettingsField(
         title="Publish plugins",
         description="Fill combination of families, task names and hosts "
                     "when to send notification",
