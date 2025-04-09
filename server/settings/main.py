@@ -1,4 +1,4 @@
-from ayon_server.settings.common import SettingsField, BaseSettingsModel
+from ayon_server.settings import SettingsField, BaseSettingsModel
 
 from .publish_plugins import SlackPublishPlugins
 
