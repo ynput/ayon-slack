@@ -8,6 +8,8 @@ import pyblish.api
 from ayon_core.lib.plugin_tools import prepare_template_data
 from ayon_core.pipeline.publish import get_publish_repre_path
 
+from ayon_core.lib import StringTemplate
+
 
 class SlackOperations:
     def __init__(self, token, log):
@@ -216,9 +218,8 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
         """
 
         fill_data = copy.deepcopy(instance.data["anatomyData"])
-        # Make sure version is string
-        # TODO remove when fixed in ayon-core 'prepare_template_data' function
-        fill_data["version"] = str(fill_data["version"])
+        anatomy = instance.context.data["anatomy"]
+        fill_data["root"] = anatomy.roots
         if review_path:
             fill_data["review_filepath"] = review_path
 
@@ -241,15 +242,12 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
         multiple_case_variants = prepare_template_data(fill_data)
         fill_data.update(multiple_case_variants)
         try:
-            message = self._escape_missing_keys(
-                message, fill_data
-            ).format(**fill_data)
+            message = StringTemplate.format_template(message, fill_data)
         except Exception:
             # shouldn't happen
             self.log.warning(
                 "Some keys are missing in {}".format(message),
                 exc_info=True)
-        message = self._handle_optionality(message)
 
         return message
 
