@@ -249,6 +249,7 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
             self.log.warning(
                 "Some keys are missing in {}".format(message),
                 exc_info=True)
+        message = self._handle_optionality(message)
 
         return message
 
@@ -356,3 +357,28 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
             )
 
         return message
+
+    def _handle_optionality(self, message: str) -> str:
+        """
+        Removes substrings wrapped in <> if they contain any {} inside.
+
+        '<>' denotes optionality in Anatomy Templates. This allows to write
+        <You uploaded {review_filepath}> which will be completely omitted if
+        no `review_filepath` will be calculated, eg {review_filepath} will stay
+        as a placeholder.
+        """
+
+        # Pattern to find substrings wrapped in <>
+        pattern = r'<([^<>]*)>'
+
+        def replacer(match):
+            content = match.group(1)
+            # If content contains { or }, remove entire <> substring
+            if '{' in content or '}' in content:
+                return ''
+            # Otherwise, keep it as is (including angle brackets)
+            return content
+
+        # Substitute using the replacer function
+        result = re.sub(pattern, replacer, message)
+        return result
