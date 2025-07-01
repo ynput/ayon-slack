@@ -221,6 +221,11 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
         if review_path:
             fill_data["review_filepath"] = review_path
 
+        version_placeholders = self._find_version_placeholders(
+            message, fill_data["version"])
+        if version_placeholders:
+            fill_data.update(version_placeholders)
+
         message = (
             message
             .replace("{task}", "{task[name]}")
@@ -355,3 +360,23 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
             )
 
         return message
+
+    def _find_version_placeholders(
+        self,
+        message: str,
+        version: int
+    ) -> dict[str,str]:
+        """
+        Finds all {version:X>Y} placeholders in text and returns a dictionary
+        mapping placeholder -> formatted version string.
+        """
+        pattern = r'\{(version:(.?)>(\d+))\}'
+
+        placeholders = {}
+
+        for full_match, pad_char, width_str in re.findall(pattern, message):
+            width = int(width_str)
+            formatted_version = f"{version:{pad_char}>{width}}"
+            placeholders[full_match] = formatted_version
+
+        return placeholders
