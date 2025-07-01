@@ -374,8 +374,8 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
         def replacer(match):
             content = match.group(1)
             # If content contains { or }, remove entire <> substring
-            if '{' in content or '}' in content:
-                return ''
+            if "{" in content or "}" in content:
+                return ""
             # Otherwise, keep it as is (including angle brackets)
             return content
 
