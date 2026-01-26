@@ -33,32 +33,26 @@ class CollectSlackFamilies(pyblish.api.InstancePlugin,
         ]
 
     def process(self, instance):
-        task_data = instance.data["anatomyData"].get("task", {})
+        task_name = task_type = None
+        task_entity = instance.data.get("taskEntity")
+        if task_entity:
+            task_name = task_entity["name"]
+            task_type = task_entity["taskType"]
         product_type = instance.data["productType"]
+        product_base_type = instance.data.get("productBaseType")
+        if not product_base_type:
+            product_base_type = product_type
         key_values = {
-            "product_types": product_type,
-            "task_names": task_data.get("name"),
-            "task_types": task_data.get("type"),
-            "hosts": instance.context.data["hostName"],
+            "task_names": task_name,
+            "task_types": task_type,
+            "host_names": instance.context.data["hostName"],
+            "product_base_types": product_base_type,
             "product_names": instance.data["productName"],
-
-            # Backwards compatibility
-            "families": product_type,
-            "tasks": task_data.get("name"),
-            "subsets": instance.data["productName"],
-            "subset_names": instance.data["productName"],
         }
-        # Filter 'key_values' for backwards compatibility
-        if self.profiles:
-            profile_keys = set(self.profiles[0].keys())
-            key_values = {
-                key: value
-                for key, value in key_values.items()
-                if key in profile_keys
-            }
-        profile = filter_profiles(self.profiles, key_values,
-                                  logger=self.log)
 
+        profile = filter_profiles(
+            self.profiles, key_values, logger=self.log
+        )
         if not profile:
             self.log.info("No profile found, notification won't be send")
             return
