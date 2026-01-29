@@ -25,14 +25,10 @@ class ChannelMessage(BaseSettingsModel):
     )
 
 
-class Profile(BaseSettingsModel):
-    product_types: list[str] = SettingsField(
+class CollectSlackFamilyProfile(BaseSettingsModel):
+    host_names: list[str] = SettingsField(
         default_factory=list,
-        title="Product types"
-    )
-    hosts: list[str] = SettingsField(
-        default_factory=list,
-        title="Hosts"
+        title="Host names"
     )
     task_types: list[str] = SettingsField(
         default_factory=list,
@@ -43,9 +39,13 @@ class Profile(BaseSettingsModel):
         default_factory=list,
         title="Task names"
     )
+    product_base_types: list[str] = SettingsField(
+        default_factory=list,
+        title="Product base types"
+    )
     product_names: list[str] = SettingsField(
-    default_factory=list,
-    title="Product names"
+        default_factory=list,
+        title="Product names"
     )
     review_upload_limit: float = SettingsField(
         50.0,
@@ -67,9 +67,9 @@ class CollectSlackFamiliesPlugin(BaseSettingsModel):
     enabled: bool = True
     optional: bool = SettingsField(False, title="Optional")
 
-    profiles: list[Profile] = SettingsField(
+    profiles: list[CollectSlackFamilyProfile] = SettingsField(
         title="Profiles",
-        default_factory=Profile
+        default_factory=CollectSlackFamilyProfile
     )
 
 
