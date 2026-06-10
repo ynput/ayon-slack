@@ -19,6 +19,7 @@ oauth_config:
       - chat:write.public
       - files:write
       - channels:read
+      - users:read
       - users:read.email
       - im:write
 settings:
