@@ -10,6 +10,10 @@ class ChannelMessage(BaseSettingsModel):
         default_factory=list,
         title="Channels"
     )
+    send_to_current_user: bool = SettingsField(
+        default=False,
+        title="Send Slack DM to publishing AYON user"
+    )
     upload_thumbnail: bool = SettingsField(
         default=True,
         title="Upload thumbnail"
