@@ -15,3 +15,17 @@ Addon allowing sending notification to Slack channel(s) at the end of publishing
 
 It allows to upload thumbnail and review(for example mp4/mov) to the channel.
 Uploading is limited by configurable file size to spare Slack disk limit.
+
+Direct message to the publishing user:
+-------------------------------------
+Each message in a profile can also DM the AYON user who triggered the publish
+(toggle `Send Slack DM to publishing AYON user`). The AYON user is reconciled to their
+Slack account via a user attribute `slackId`; if it is empty the user's `email`
+attribute is looked up against the Slack API instead.
+
+Setup:
+- Create a user-scoped string attribute named `slackId` in AYON
+  (Settings > Attributes, scope = User) and set it per user to their Slack
+  member id (e.g. `U0XXXXXXX`), or rely on the email fallback.
+- The Slack bot token needs the `users:read.email` (email fallback) and
+  `im:write` (DM delivery) scopes in addition to the existing ones.

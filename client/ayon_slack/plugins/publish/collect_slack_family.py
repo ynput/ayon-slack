@@ -2,6 +2,7 @@ import pyblish.api
 
 from ayon_core.lib.profiles_filtering import filter_profiles
 from ayon_core.lib import attribute_definitions
+from ayon_core.lib.local_settings import get_ayon_user_entity
 from ayon_core.pipeline import AYONPyblishPluginMixin
 
 
@@ -65,6 +66,13 @@ class CollectSlackFamilies(pyblish.api.InstancePlugin,
             prof["review_upload_limit"] = profile.get("review_upload_limit",
                                                       50)
         instance.data["slack_channel_message_profiles"] = selected_profiles
+
+        if any(p.get("send_to_current_user") for p in selected_profiles):
+            attrib = get_ayon_user_entity().get("attrib", {})
+            instance.data["slack_current_user"] = {
+                "slackId": attrib.get("slackId"),
+                "email": attrib.get("email"),
+            }
 
         slack_token = (instance.context.data["project_settings"]
                                             ["slack"]
