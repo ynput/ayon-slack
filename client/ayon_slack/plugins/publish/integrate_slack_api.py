@@ -48,6 +48,17 @@ class SlackOperations:
 
         return users, groups
 
+    def get_user_id_by_email(self, email):
+        from slack_sdk.errors import SlackApiError
+        try:
+            response = self.client.users_lookupByEmail(email=email)
+            return response["user"]["id"]
+        except SlackApiError:
+            self.log.warning(
+                "Cannot find Slack user for email '{}'".format(email),
+                exc_info=True)
+            return None
+
     def send_message(self, channel, message, publish_files):
         from slack_sdk.errors import SlackApiError
         try:
@@ -176,11 +187,16 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
                 message, publish_files = self._handle_review_upload(
                     message, message_profile, publish_files, review_path)
 
-            for channel in message_profile["channels"]:
+            client = SlackOperations(token, self.log)
+            channels = list(message_profile["channels"])
+            if message_profile.get("send_to_current_user"):
+                dm_channel = self._get_current_user_channel(instance, client)
+                if dm_channel:
+                    channels.append(dm_channel)
+
+            for channel in channels:
                 channel = self._get_filled_content(
                     channel, instance, review_path)
-
-                client = SlackOperations(token, self.log)
 
                 if "@" in message:
                     cache_key = "__cache_slack_ids"
@@ -196,6 +212,18 @@ class IntegrateSlackAPI(pyblish.api.InstancePlugin):
                     message = self._translate_users(message, users, groups)
 
                 client.send_message(channel, message, publish_files)
+
+    def _get_current_user_channel(self, instance, client):
+        """Resolve the publishing user's Slack DM channel (their user id)."""
+        user = instance.data.get("slack_current_user") or {}
+        slack_id = user.get("slackId", None)
+        if slack_id:
+            return slack_id
+        email = user.get("email", None)
+        if email:
+            return client.get_user_id_by_email(email)
+        self.log.warning("No slackId or email for current user; skipping DM")
+        return None
 
     def _handle_review_upload(self, message, message_profile, publish_files,
                               review_path):
