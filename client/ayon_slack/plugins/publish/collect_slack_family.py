@@ -3,11 +3,11 @@ import pyblish.api
 from ayon_core.lib.profiles_filtering import filter_profiles
 from ayon_core.lib import attribute_definitions
 from ayon_core.lib.local_settings import get_ayon_user_entity
-from ayon_core.pipeline import AYONPyblishPluginMixin
+from ayon_core.pipeline import OptionalPyblishPluginMixin
 
 
 class CollectSlackFamilies(pyblish.api.InstancePlugin,
-                           AYONPyblishPluginMixin):
+                           OptionalPyblishPluginMixin):
     """Collect family for Slack notification
 
         Expects configured profile in
