@@ -21,6 +21,7 @@ DEFAULT_SLACK_SETTING = {
         "CollectSlackFamilies": {
             "enabled": True,
             "optional": True,
+            "active": True,
             "profiles": [
                 {
                     "families": [],

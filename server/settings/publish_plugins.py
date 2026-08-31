@@ -74,7 +74,7 @@ class CollectSlackFamiliesPlugin(BaseSettingsModel):
     _isGroup = True
     enabled: bool = True
     optional: bool = SettingsField(False, title="Optional")
-    active: bool = SettingsField(title="Active")
+    active: bool = SettingsField(True, title="Active")
 
     profiles: list[CollectSlackFamilyProfile] = SettingsField(
         title="Profiles",
