@@ -1,7 +1,7 @@
 import pyblish.api
 
 from ayon_core.lib.profiles_filtering import filter_profiles
-from ayon_core.lib import attribute_definitions
+from ayon_core.lib.attribute_definitions import TextDef
 from ayon_core.lib.local_settings import get_ayon_user_entity
 from ayon_core.pipeline import OptionalPyblishPluginMixin
 
@@ -22,18 +22,69 @@ class CollectSlackFamilies(pyblish.api.InstancePlugin,
     profiles = []
 
     @classmethod
-    def get_attribute_defs(cls):
-        return [
-            attribute_definitions.TextDef(
+    def get_attr_defs_for_instance(
+        cls, create_context, instance
+    ):
+        # get attrs from OptionalPyblishPluginMixin
+        attr_defs = super().get_attribute_defs()
+
+        # Attributes logic
+        publish_attributes = instance["publish_attributes"].get(
+            cls.__name__, {})
+
+        default_optional = getattr(cls, "optional", True)
+        default_active = getattr(cls, "active", True)
+        current_active =  publish_attributes.get("active", True)
+
+        visiblity = default_active if not default_optional else current_active
+
+        return  attr_defs + [
+            TextDef(
                 # Key under which it will be stored
                 "additional_message",
                 # Use plugin label as label for attribute
                 label="Additional Slack message",
-                placeholder="<Only if Slack is configured>"
+                placeholder="<Only if Slack is configured>",
+                visible=visiblity,
             )
         ]
 
+    @classmethod
+    def register_create_context_callbacks(cls, create_context):
+        create_context.add_value_changed_callback(cls.on_values_changed)
+
+    @classmethod
+    def on_values_changed(cls, event):
+        """Update instance attribute definitions on attribute changes."""
+
+        # Update attributes if any of the following plug-in attributes
+        # change:
+        keys = {"active"}
+
+        for instance_change in event["changes"]:
+            instance = instance_change["instance"]
+            if not cls.instance_matches_plugin_families(instance):
+                continue
+
+            value_changes = instance_change["changes"]
+
+            plugin_attribute_changes = (
+                value_changes.get("publish_attributes", {})
+                .get(cls.__name__, {}))
+
+            if not any(key in plugin_attribute_changes for key in keys):
+                continue
+
+            # Update the attribute definitions
+            new_attrs = cls.get_attr_defs_for_instance(
+                event["create_context"], instance
+            )
+            instance.set_publish_plugin_attr_defs(cls.__name__, new_attrs)
+
     def process(self, instance):
+        if not self.is_active(instance.data):
+            return
+
         task_name = task_type = None
         task_entity = instance.data.get("taskEntity")
         if task_entity:
